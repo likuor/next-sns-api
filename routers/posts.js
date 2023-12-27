@@ -1,7 +1,5 @@
 const router = require('express').Router();
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
@@ -21,6 +19,9 @@ router.post('/post', async (req, res) => {
         content,
         authorId: 1,
       },
+      include: {
+        author: true,
+      },
     });
     return res.status(201).json(newPost);
   } catch (error) {
@@ -39,6 +40,9 @@ router.get('/get_latest_post', async (req, res) => {
     const latestPosts = await prisma.post.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
+      include: {
+        author: true,
+      },
     });
     return res.status(200).json(latestPosts);
   } catch (error) {
