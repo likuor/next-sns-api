@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
-// POst a tweet
+// Post a tweet
 router.post('/post', async (req, res) => {
   const { content } = req.body;
 
@@ -23,6 +23,24 @@ router.post('/post', async (req, res) => {
       },
     });
     return res.status(201).json(newPost);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+
+  return res.json({ user });
+});
+
+// Show tweets
+router.get('/get_latest_post', async (req, res) => {
+  try {
+    const latestPosts = await prisma.post.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+    });
+    return res.status(200).json(latestPosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({
