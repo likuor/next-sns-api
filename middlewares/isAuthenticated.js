@@ -9,7 +9,7 @@ const isAuthenticated = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+  jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
     if (error) {
       return res.status(401).json({
         message: 'Not authorized',
