@@ -21,7 +21,11 @@ router.post('/post', isAuthenticated, async (req, res) => {
         authorId: req.userId,
       },
       include: {
-        author: true,
+        author: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return res.status(201).json(newPost);
@@ -42,7 +46,11 @@ router.get('/get_latest_post', async (req, res) => {
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: {
-        author: true,
+        author: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return res.status(200).json(latestPosts);
