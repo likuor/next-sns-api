@@ -21,7 +21,11 @@ router.post('/post', isAuthenticated, async (req, res) => {
         authorId: req.userId,
       },
       include: {
-        author: true,
+        author: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return res.status(201).json(newPost);
@@ -31,8 +35,6 @@ router.post('/post', isAuthenticated, async (req, res) => {
       message: 'Server error',
     });
   }
-
-  return res.json({ user });
 });
 
 // Show tweets
@@ -42,7 +44,11 @@ router.get('/get_latest_post', async (req, res) => {
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: {
-        author: true,
+        author: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return res.status(200).json(latestPosts);
@@ -52,8 +58,31 @@ router.get('/get_latest_post', async (req, res) => {
       message: 'Server error',
     });
   }
+});
 
-  return res.json({ user });
+// Show user tweets
+router.get('/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const userPosts = await prisma.post.findMany({
+      where: {
+        authorId: parseInt(userId),
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    return res.status(200).json(userPosts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
 });
 
 module.exports = router;
